@@ -24,6 +24,7 @@
           <element id="library" level="project" name="Maven: org.webjars:jquery:3.1.1" />
           <element id="library" level="project" name="Maven: org.webjars:bootstrap:3.3.7" />
           <element id="library" level="project" name="Maven: org.webjars:less:2.5.3" />
+          <element id="library" level="project" name="Maven: org.json:json:20140107" />
         </element>
       </element>
       <element id="directory" name="META-INF">

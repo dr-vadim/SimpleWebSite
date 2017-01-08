@@ -3,12 +3,14 @@ package dao;
 import interfaces.dao.UserDao;
 import models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import javax.sql.DataSource;
 import javax.sql.RowSet;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +23,11 @@ public class UserDaoImpl implements UserDao {
     //language=SQL
     private final String SQL_SELECT_ALL = "SELECT * FROM group_users";
     //language=SQL
-    private final String SQL_ADD_USER = "INSERT INTO group_users SET name=?,age=?";
+    private final String SQL_ADD_USER = "INSERT INTO group_users (name,age) VALUES (?,?)";
+    //language=SQL
+    private final String SQL_UPDATE_USER = "UPDATE group_users SET name=?,age=? WHERE id=?";
+    //language=SQL
+    private final String SQL_DELETE_USER = "DELETE FROM group_users WHERE id=?";
 
     private JdbcTemplate template;
     public UserDaoImpl(DataSource dataSource){
@@ -48,14 +54,34 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean save(User item) {
+    public User save(User item) {
         Object[] args = {item.getName(),item.getAge()};
         int[] types = {Types.VARCHAR,Types.INTEGER};
-        return template.update(SQL_ADD_USER,args,types) > 0 ? true : false;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int res = template.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps =
+                        connection.prepareStatement(SQL_ADD_USER, new String[] {"id"});
+                ps.setString(1,item.getName());
+                ps.setInt(2, item.getAge());
+                return ps;
+            }
+        },keyHolder);
+        if(res <= 0) return null;
+        item.setId(keyHolder.getKey().intValue());
+        return item;
+    }
+
+    @Override
+    public boolean update(int id, User item) {
+        Object[] args = {item.getName(),item.getAge(),id};
+        int[] types = {Types.VARCHAR,Types.INTEGER,Types.INTEGER};
+        return template.update(SQL_UPDATE_USER,args,types) > 0;
     }
 
     @Override
     public boolean remove(int id) {
-        return false;
+        return template.update(SQL_DELETE_USER,new Integer[]{id},new int[]{Types.INTEGER}) > 0;
     }
 }

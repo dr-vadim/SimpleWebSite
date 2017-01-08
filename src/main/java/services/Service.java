@@ -5,10 +5,7 @@ import interfaces.dao.UserDao;
 import models.Auto;
 import models.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Service {
@@ -25,8 +22,13 @@ public class Service {
         return list.stream().collect(Collectors.toMap(i -> i.getId(),i -> i));
     }
 
+    public SortedMap<Integer,User> userListToSortedMap(List<User> list){
+        Map<Integer,User> mapUser = list.stream().collect(Collectors.toMap(i -> i.getId(),i -> i));
+        return new TreeMap(mapUser);
+    }
+
     public List<User> getUsersWithAuto(){
-        Map<Integer,User> users = userListToMap(userDao.findAll());
+        Map<Integer,User> users = userListToSortedMap(userDao.findAll());
         List<Auto> autos = autoDao.findAll();
         for (Auto auto : autos){
             int id = auto.getUser().getId();
@@ -42,7 +44,21 @@ public class Service {
         return userList;
     }
 
-    public boolean addUser(User user){
+    public User getUser(int id){
+        return userDao.find(id);
+    }
+
+    public User addUser(User user){
         return userDao.save(user);
+    }
+
+    public boolean updateUser(int id,User user){
+        return userDao.update(id,user);
+    }
+
+    public boolean deleteUser(int id){
+        autoDao.removeByUser(id);
+        boolean result = userDao.remove(id);
+        return result;
     }
 }
