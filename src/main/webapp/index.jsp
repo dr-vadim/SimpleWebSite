@@ -71,10 +71,9 @@
                     </p>
                 </div>
                 <div class="col-md-9">
-                    <h2>Hello!</h2>
                     <div class="panel panel-default">
                         <!-- Default panel contents -->
-                        <div class="panel-heading">Panel heading</div>
+                        <div class="panel-heading">Пользователи</div>
                         <!-- Table -->
                         <table class="table table-bordered" id="usersTable">
                             <tr>
