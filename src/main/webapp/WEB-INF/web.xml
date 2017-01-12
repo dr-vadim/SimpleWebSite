@@ -17,6 +17,10 @@
     <servlet-name>MainServlet</servlet-name>
     <servlet-class>servlets.MainServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>AutoServlet</servlet-name>
+    <servlet-class>servlets.AutoServlet</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>MainServlet</servlet-name>
@@ -25,5 +29,13 @@
     <url-pattern>/add</url-pattern>
     <url-pattern>/update</url-pattern>
     <url-pattern>/get</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AutoServlet</servlet-name>
+    <url-pattern>/auto</url-pattern>
+    <url-pattern>/auto/delete</url-pattern>
+    <url-pattern>/auto/add</url-pattern>
+    <url-pattern>/auto/update</url-pattern>
+    <url-pattern>/auto/get</url-pattern>
   </servlet-mapping>
 </web-app>

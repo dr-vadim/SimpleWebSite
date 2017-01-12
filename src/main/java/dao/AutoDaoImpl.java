@@ -19,6 +19,8 @@ public class AutoDaoImpl implements AutoDao{
     //language=SQL
     private final String SQL_SELECT_ALL = "SELECT * FROM auto";
     //language=SQL
+    private final String SQL_SELECT_AUTOS_BY_USER = "SELECT * FROM auto WHERE user_id=?";
+    //language=SQL
     private final String SQL_INSERT_AUTO = "INSERT INTO auto(name,color,user_id) VALUES (?,?,?)";
     //language=SQL
     private final String SQL_UPDATE_AUTO = "UPDATE auto SET name=?,color=?,user_id=? WHERE id=?";
@@ -83,6 +85,11 @@ public class AutoDaoImpl implements AutoDao{
     @Override
     public boolean remove(int id) {
         return template.update(SQL_DELETE_AUTO,new Integer[]{id},new int[]{Types.INTEGER}) > 0;
+    }
+
+    @Override
+    public List<Auto> findByUser(int userId) {
+        return template.query(SQL_SELECT_AUTOS_BY_USER,new Object[]{userId},autoRowMapper);
     }
 
     @Override

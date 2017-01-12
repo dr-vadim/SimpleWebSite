@@ -1,6 +1,7 @@
 package servlets;
 
 import factories.ServiceFactory;
+import interfaces.servlets.ServletRequestActions;
 import models.User;
 import org.json.JSONObject;
 import services.Service;
@@ -17,9 +18,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.List;
 
-public class MainServlet extends HttpServlet {
+public class MainServlet extends HttpServlet implements ServletRequestActions{
     Service service;
     @Override
     public void init() throws ServletException {
@@ -32,6 +37,11 @@ public class MainServlet extends HttpServlet {
     }
 
     @Override
+    public void destroy() {
+        super.destroy();
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //super.doGet(req, resp);
         //Service service = ServiceFactory.getInstance().getService();
@@ -41,6 +51,7 @@ public class MainServlet extends HttpServlet {
         req.setAttribute("userList", users);
 
         req.getRequestDispatcher("index.jsp").forward(req,resp);
+        //index_jsp index = new index_jsp();
     }
 
     @Override
@@ -51,7 +62,7 @@ public class MainServlet extends HttpServlet {
         if(paths.length > 1) {
             action = paths[1].toLowerCase();
             try {
-                MainServlet mainServletClass = MainServlet.class.newInstance();
+                ServletRequestActions mainServletClass = MainServlet.class.newInstance();
                 Method method = MainServlet.class.getDeclaredMethod(action, HttpServletRequest.class, HttpServletResponse.class);
                 method.invoke(mainServletClass, req, resp);
             } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
@@ -162,4 +173,6 @@ public class MainServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8"); // You want world domination, huh?
         resp.getWriter().write(textJson);       // Write response body.
     }
+
+
 }

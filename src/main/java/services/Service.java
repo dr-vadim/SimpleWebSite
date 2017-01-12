@@ -61,4 +61,24 @@ public class Service {
         boolean result = userDao.remove(id);
         return result;
     }
+
+    public List<Auto> getAutoByUser(int userId){
+        return autoDao.findByUser(userId);
+    }
+
+    public Auto addAuto(Auto auto){
+        return autoDao.save(auto);
+    }
+
+    public boolean updateAuto(int id, Auto auto){
+        return autoDao.update(id,auto);
+    }
+
+    public boolean deleteAuto(int id){
+        return autoDao.remove(id);
+    }
+
+    public Auto getAuto(int id){
+        return autoDao.find(id);
+    }
 }
