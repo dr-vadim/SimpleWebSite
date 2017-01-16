@@ -2,6 +2,8 @@ package dao;
 
 import interfaces.dao.UserDao;
 import models.User;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,29 +11,33 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import javax.sql.DataSource;
-import javax.sql.RowSet;
 import java.sql.*;
 import java.util.List;
-import java.util.Map;
 
-/**
- * Created by User on 04.01.2017.
- */
 public class UserDaoImpl implements UserDao {
     //language=SQL
     private final String SQL_SELECT_USER_BY_ID = "SELECT * FROM group_users WHERE id=?";
+    //language=HQL
+    private final String HQL_SELECT_USER_BY_ID = "from User u where u.id=:id";
     //language=SQL
     private final String SQL_SELECT_ALL = "SELECT * FROM group_users";
     //language=SQL
     private final String SQL_ADD_USER = "INSERT INTO group_users (name,age) VALUES (?,?)";
     //language=SQL
     private final String SQL_UPDATE_USER = "UPDATE group_users SET name=?,age=? WHERE id=?";
+    //language=HQL
+    private final String HQL_UPDATE_USER = "update User as u set u.name=:name, u.age=:age WHERE u.id=:id";
     //language=SQL
     private final String SQL_DELETE_USER = "DELETE FROM group_users WHERE id=?";
+    //language=HQL
+    private final String HQL_DELETE_USER = "delete from User u WHERE u.id=:id";
 
     private JdbcTemplate template;
-    public UserDaoImpl(DataSource dataSource){
+    private Session session;
+
+    public UserDaoImpl(DataSource dataSource, Session session){
         template = new JdbcTemplate(dataSource);
+        this.session = session;
     }
 
     RowMapper<User> userRowMapper = (ResultSet rs, int i) -> {
@@ -54,34 +60,33 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User save(User item) {
-        Object[] args = {item.getName(),item.getAge()};
-        int[] types = {Types.VARCHAR,Types.INTEGER};
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int res = template.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement ps =
-                        connection.prepareStatement(SQL_ADD_USER, new String[] {"id"});
-                ps.setString(1,item.getName());
-                ps.setInt(2, item.getAge());
-                return ps;
-            }
-        },keyHolder);
-        if(res <= 0) return null;
-        item.setId(keyHolder.getKey().intValue());
-        return item;
+    public User save(User user) {
+        session.beginTransaction();
+        Integer userId = (Integer)session.save(user);
+        session.getTransaction().commit();
+        user.setId(userId);
+        return user;
     }
 
     @Override
     public boolean update(int id, User item) {
-        Object[] args = {item.getName(),item.getAge(),id};
-        int[] types = {Types.VARCHAR,Types.INTEGER,Types.INTEGER};
-        return template.update(SQL_UPDATE_USER,args,types) > 0;
+        session.beginTransaction();
+        Query query = session.createQuery(HQL_UPDATE_USER);
+        query.setParameter("name",item.getName())
+                .setParameter("age", item.getAge());
+        int result = query.executeUpdate();
+        session.getTransaction().commit();
+
+        return result > 0;
     }
 
     @Override
     public boolean remove(int id) {
-        return template.update(SQL_DELETE_USER,new Integer[]{id},new int[]{Types.INTEGER}) > 0;
+        session.beginTransaction();
+        Query query = session.createQuery(HQL_DELETE_USER);
+        query.setParameter("id",id);
+        int result = query.executeUpdate();
+        session.getTransaction().commit();
+        return result > 0;
     }
 }

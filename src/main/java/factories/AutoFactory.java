@@ -1,6 +1,7 @@
 package factories;
 
 import interfaces.dao.AutoDao;
+import org.hibernate.Session;
 
 import javax.sql.DataSource;
 import java.io.FileInputStream;
@@ -12,7 +13,7 @@ import java.util.Properties;
 
 public class AutoFactory {
     private static final AutoFactory instance;
-    private final String PROPERTIES_PATH = "E:\\Java\\Projects\\SimpleWebApp\\src\\main\\resources\\context.properties";
+    private final String PROPERTIES_PATH = "context.properties";
 
     AutoDao auto;
 
@@ -22,12 +23,14 @@ public class AutoFactory {
 
     private AutoFactory(){
         Properties prop = new Properties();
-        try(FileInputStream fin = new FileInputStream(PROPERTIES_PATH)){
+        String path = getClass().getClassLoader().getResource(PROPERTIES_PATH).getPath();
+        try(FileInputStream fin = new FileInputStream(path)){
             prop.load(fin);
             String dataType = prop.getProperty("data.type");
             String className = prop.getProperty("auto.class."+dataType);
-            Constructor<?> constructor = Class.forName(className).getConstructor(DataSource.class);
-            auto = (AutoDao) constructor.newInstance(DataSourceFactory.getInstance().getDataSource());
+            Constructor<?> constructor = Class.forName(className).getConstructor(DataSource.class, Session.class);
+            auto = (AutoDao) constructor.newInstance(DataSourceFactory.getInstance().getDataSource(),
+                    HibernateConnector.getInstance().getSession());
         }catch (IOException e){
             throw new IllegalArgumentException(e);
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |

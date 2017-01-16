@@ -1,6 +1,7 @@
 package factories;
 
 import interfaces.dao.UserDao;
+import org.hibernate.Session;
 import org.springframework.beans.NotReadablePropertyException;
 
 import javax.sql.DataSource;
@@ -11,12 +12,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
-/**
- * Created by User on 04.01.2017.
- */
 public class UserFactory {
     private static final UserFactory instance;
-    private final String PROPERTIES_PATH = "E:\\Java\\Projects\\SimpleWebApp\\src\\main\\resources\\context.properties";
+    private final String PROPERTIES_PATH = "context.properties";
     UserDao userDao;
 
     static{
@@ -25,13 +23,15 @@ public class UserFactory {
 
     private UserFactory(){
         Properties properties = new Properties();
-        try(FileInputStream fin = new FileInputStream(PROPERTIES_PATH)){
+        String path = getClass().getClassLoader().getResource(PROPERTIES_PATH).getPath();
+        try(FileInputStream fin = new FileInputStream(path)){
 
             properties.load(fin);
             String dataType = properties.getProperty("data.type");
             String userClassName = properties.getProperty("user.class."+dataType);
-            Constructor<?> constructor = Class.forName(userClassName).getConstructor(DataSource.class);
-            userDao = (UserDao) constructor.newInstance(DataSourceFactory.getInstance().getDataSource());
+            Constructor<?> constructor = Class.forName(userClassName).getConstructor(DataSource.class, Session.class);
+            userDao = (UserDao) constructor.newInstance(DataSourceFactory.getInstance().getDataSource(),
+                    HibernateConnector.getInstance().getSession());
 
         } catch (IOException | InvocationTargetException | InstantiationException |
                 IllegalAccessException | NoSuchMethodException | ClassNotFoundException e) {

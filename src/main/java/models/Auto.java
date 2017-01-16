@@ -1,9 +1,25 @@
 package models;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "auto")
 public class Auto {
+
+    @Id
+    @SequenceGenerator(name = "seq", sequenceName = "auto_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "model")
     private String model;
+
+    @Column(name = "color")
     private String color;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     public Auto(Builder builder){
@@ -11,6 +27,9 @@ public class Auto {
         this.model = builder.model;
         this.color = builder.color;
         this.user = builder.user;
+    }
+
+    public Auto() {
     }
 
     public static class Builder{

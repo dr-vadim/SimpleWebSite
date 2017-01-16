@@ -173,6 +173,4 @@ public class MainServlet extends HttpServlet implements ServletRequestActions{
         resp.setCharacterEncoding("UTF-8"); // You want world domination, huh?
         resp.getWriter().write(textJson);       // Write response body.
     }
-
-
 }

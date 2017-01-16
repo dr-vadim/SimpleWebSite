@@ -3,6 +3,7 @@ package dao;
 import interfaces.dao.AutoDao;
 import models.Auto;
 import models.User;
+import org.hibernate.Session;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,24 +22,26 @@ public class AutoDaoImpl implements AutoDao{
     //language=SQL
     private final String SQL_SELECT_AUTOS_BY_USER = "SELECT * FROM auto WHERE user_id=?";
     //language=SQL
-    private final String SQL_INSERT_AUTO = "INSERT INTO auto(name,color,user_id) VALUES (?,?,?)";
+    private final String SQL_INSERT_AUTO = "INSERT INTO auto(model,color,user_id) VALUES (?,?,?)";
     //language=SQL
-    private final String SQL_UPDATE_AUTO = "UPDATE auto SET name=?,color=?,user_id=? WHERE id=?";
+    private final String SQL_UPDATE_AUTO = "UPDATE auto SET model=?,color=?,user_id=? WHERE id=?";
     //language=SQL
     private final String SQL_DELETE_AUTO = "DELETE FROM auto WHERE id=?";
     //language=SQL
     private final String SQL_DELETE_AUTO_BY_USER = "DELETE FROM auto WHERE user_id=?";
 
     private JdbcTemplate template;
+    private Session session;
 
-    public AutoDaoImpl(DataSource dataSource){
+    public AutoDaoImpl(DataSource dataSource, Session session){
         template = new JdbcTemplate(dataSource);
+        this.session = session;
     }
 
     RowMapper<Auto> autoRowMapper = (ResultSet rs, int i) -> {
         User user = new User.Builder().setId(rs.getInt("user_id")).build();
         Auto auto = new Auto.Builder().setId(rs.getInt("id"))
-                .setModel(rs.getString("name"))
+                .setModel(rs.getString("model"))
                 .setColor(rs.getString("color"))
                 .setUser(user).build();
         return auto;

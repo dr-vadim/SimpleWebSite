@@ -2,11 +2,25 @@ package models;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "group_users")
 public class User {
+
+    @Id
+    @SequenceGenerator(name = "seq", sequenceName = "group_users_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "age")
     private int age;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Auto> auto;
 
     public User(Builder builder){
@@ -15,6 +29,8 @@ public class User {
         this.age = builder.age;
         this.auto = builder.auto;
     }
+
+    public User() {}
 
     public static class Builder{
         public int id;

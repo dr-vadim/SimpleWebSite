@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class DataSourceFactory {
     private static final DataSourceFactory instance;
-    private final String PROPERTIES_PATH = "E:\\Java\\Projects\\SimpleWebApp\\src\\main\\resources\\context.properties";
+    private final String PROPERTIES_PATH = "context.properties";
 
     private DataSource dataSource;
 
@@ -20,7 +20,8 @@ public class DataSourceFactory {
 
     private DataSourceFactory(){
         Properties prop = new Properties();
-        try(FileInputStream fin = new FileInputStream(PROPERTIES_PATH)){
+        String path = getClass().getClassLoader().getResource(PROPERTIES_PATH).getPath();
+        try(FileInputStream fin = new FileInputStream(path)){
             prop.load(fin);
             String dataType = prop.getProperty("data.type");
             String dataUrl = prop.getProperty("data.url."+dataType);

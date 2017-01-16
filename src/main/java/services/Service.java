@@ -57,7 +57,7 @@ public class Service {
     }
 
     public boolean deleteUser(int id){
-        autoDao.removeByUser(id);
+        //autoDao.removeByUser(id);
         boolean result = userDao.remove(id);
         return result;
     }

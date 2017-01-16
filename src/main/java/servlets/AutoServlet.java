@@ -32,7 +32,12 @@ public class AutoServlet extends HttpServlet implements ServletRequestActions{
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String userIdGetParam = req.getParameter("userId");
+        System.out.println("Servlet Path "+req.getServletPath());
+        System.out.println("Get path info "+req.getPathInfo());
+        System.out.println("Get request url "+req.getRequestURL());
+        System.out.println("Get context path "+req.getContextPath());
+
+        /*String userIdGetParam = req.getParameter("userId");
         if(userIdGetParam.isEmpty()) return;
 
         int userId = Integer.valueOf(userIdGetParam);
@@ -44,7 +49,7 @@ public class AutoServlet extends HttpServlet implements ServletRequestActions{
         req.setAttribute("listAuto", autos);
         req.setAttribute("Title", "Машины "+user.getName());
 
-        req.getRequestDispatcher("auto.jsp").forward(req,resp);
+        req.getRequestDispatcher("auto.jsp").forward(req,resp);*/
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

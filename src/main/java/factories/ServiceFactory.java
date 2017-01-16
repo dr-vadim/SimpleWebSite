@@ -14,7 +14,7 @@ import java.util.Properties;
 
 public class ServiceFactory {
     private static final ServiceFactory instance;
-    public final String PROPERTIES_PATH = "E:\\Java\\Projects\\SimpleWebApp\\src\\main\\resources\\context.properties";
+    public final String PROPERTIES_PATH = "context.properties";
 
     Service service;
 
@@ -24,9 +24,12 @@ public class ServiceFactory {
 
     private ServiceFactory(){
         Properties prop = new Properties();
-        try(FileInputStream fin = new FileInputStream(PROPERTIES_PATH)){
+        String path = getClass().getClassLoader().getResource(PROPERTIES_PATH).getPath();
+        System.out.println(path);
+        try(FileInputStream fin = new FileInputStream(path)){
             prop.load(fin);
             String classname = prop.getProperty("service.class");
+            System.out.println(classname);
             Constructor<?> constructor = Class.forName(classname).getConstructor(UserDao.class, AutoDao.class);
             service = (Service)constructor.newInstance(UserFactory.getInstance().getUser(),
                     AutoFactory.getInstance().getAuto());
