@@ -2,9 +2,11 @@ package servlets;
 
 import factories.ServiceFactory;
 import interfaces.servlets.ServletRequestActions;
+import jdk.nashorn.internal.codegen.types.Type;
 import models.Auto;
 import models.User;
 import org.json.JSONObject;
+import org.springframework.web.util.UriTemplate;
 import services.Service;
 
 import javax.servlet.ServletException;
@@ -12,10 +14,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.URIParameter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface PatternUri{
+    String value() default "";
+}
 
 public class AutoServlet extends HttpServlet implements ServletRequestActions{
 
@@ -32,15 +46,39 @@ public class AutoServlet extends HttpServlet implements ServletRequestActions{
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Servlet Path "+req.getServletPath());
-        System.out.println("Get path info "+req.getPathInfo());
-        System.out.println("Get request url "+req.getRequestURL());
-        System.out.println("Get context path "+req.getContextPath());
+        String uri = req.getRequestURI();
+        Method[] methods = getClass().getMethods();
+        UriTemplate template;
+        for(Method method: methods){
+            PatternUri patternUri = method.getAnnotation(PatternUri.class);
+            if(patternUri != null){
+                template = new UriTemplate(patternUri.value());
 
-        /*String userIdGetParam = req.getParameter("userId");
-        if(userIdGetParam.isEmpty()) return;
+                if(template.matches(uri)){
+                    Map<String, String> machMap = template.match(uri);
+                    machMap.forEach((key, value) -> {
+                        req.setAttribute(key,value);
+                    });
+                    try{
+                        method.invoke(this,req,resp);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        req.getRequestDispatcher("/404.jsp").forward(req,resp);
+    }
 
-        int userId = Integer.valueOf(userIdGetParam);
+    @PatternUri(value = "/user/{user-id}/autos")
+    public void showAutosForUser(HttpServletRequest req, HttpServletResponse resp){
+
+        String userIdS = (String)req.getAttribute("user-id");
+        if(userIdS.isEmpty()) return;
+
+        int userId = Integer.valueOf(userIdS);
         User user = service.getUser(userId);
         if(user == null) return;;
         List<Auto> autos = service.getAutoByUser(userId);
@@ -49,15 +87,21 @@ public class AutoServlet extends HttpServlet implements ServletRequestActions{
         req.setAttribute("listAuto", autos);
         req.setAttribute("Title", "Машины "+user.getName());
 
-        req.getRequestDispatcher("auto.jsp").forward(req,resp);*/
+        try {
+            req.getRequestDispatcher("/auto.jsp").forward(req,resp);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("doPost method");
+
         String servletPath = req.getServletPath();
         servletPath = servletPath.replace(mainUrl,"");
         String[] paths = servletPath.split("/");
-        System.out.println(Arrays.toString(paths)+ " "+ servletPath);
+
         String action = "";
         if(paths.length > 1) {
             action = paths[1].toLowerCase();

@@ -85,7 +85,7 @@
                                 <td>${user.getName()}</td>
                                 <td>${user.getAge()}</td>
                                 <td>
-                                    <a href="/auto?userId=${user.getId()}" role="button" class="btn btn-primary btn-sm">
+                                    <a href="/user/${user.getId()}/autos" role="button" class="btn btn-primary btn-sm">
                                         <span class="glyphicon glyphicon-list" aria-hidden="true"></span> Авто
                                     </a>
                                     <button data-id="${user.getId()}" type="button" class="btn btn-primary btn-sm remove-btn">

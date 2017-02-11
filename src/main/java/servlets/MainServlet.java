@@ -43,15 +43,14 @@ public class MainServlet extends HttpServlet implements ServletRequestActions{
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //super.doGet(req, resp);
-        //Service service = ServiceFactory.getInstance().getService();
+
         List<User> users = service.getUsersWithAuto();
         req.setAttribute("Title", "Test java site page");
-        req.setAttribute("User", users.get(0).getName());
+        if(users.size() > 0)
+            req.setAttribute("User", users.get(0).getName());
         req.setAttribute("userList", users);
 
         req.getRequestDispatcher("index.jsp").forward(req,resp);
-        //index_jsp index = new index_jsp();
     }
 
     @Override

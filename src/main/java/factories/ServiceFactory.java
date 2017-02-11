@@ -25,11 +25,11 @@ public class ServiceFactory {
     private ServiceFactory(){
         Properties prop = new Properties();
         String path = getClass().getClassLoader().getResource(PROPERTIES_PATH).getPath();
-        System.out.println(path);
+
         try(FileInputStream fin = new FileInputStream(path)){
             prop.load(fin);
             String classname = prop.getProperty("service.class");
-            System.out.println(classname);
+
             Constructor<?> constructor = Class.forName(classname).getConstructor(UserDao.class, AutoDao.class);
             service = (Service)constructor.newInstance(UserFactory.getInstance().getUser(),
                     AutoFactory.getInstance().getAuto());

@@ -73,7 +73,8 @@ public class UserDaoImpl implements UserDao {
         session.beginTransaction();
         Query query = session.createQuery(HQL_UPDATE_USER);
         query.setParameter("name",item.getName())
-                .setParameter("age", item.getAge());
+                .setParameter("age", item.getAge())
+        .setParameter("id", id);
         int result = query.executeUpdate();
         session.getTransaction().commit();
 
@@ -87,6 +88,8 @@ public class UserDaoImpl implements UserDao {
         query.setParameter("id",id);
         int result = query.executeUpdate();
         session.getTransaction().commit();
+        session.flush();
+        session.clear();
         return result > 0;
     }
 }

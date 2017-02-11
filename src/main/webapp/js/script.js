@@ -109,7 +109,7 @@ function saveUser(button){
             if(data.id) {
                 var fields = ["id", "name", "age"];
                 var actionsHtml =
-                    "<a href=\"/auto?userId="+data.id+"\" role=\"button\" class=\"btn btn-primary btn-sm\">"
+                    "<a href=\"/user/"+data.id+"/autos\" role=\"button\" class=\"btn btn-primary btn-sm\">"
                         +"<span class=\"glyphicon glyphicon-list\" aria-hidden=\"true\"></span> Авто"+
                     "</a> "
                     +"<button data-id=\"" + data.id + "\" type=\"button\" class=\"btn btn-primary btn-sm remove-btn\">"
@@ -128,7 +128,7 @@ function saveUser(button){
                     $("#myMaodal-alerts").find("div.success-add").fadeIn(500).delay(2500).fadeOut(500);
                 }else if(action == "/update"){
                     var i = 0;
-                    console.log($(tr).find("td"));
+                    //console.log($(tr).find("td"));
                     $(tr).find("td").each(function(){
                        if(fields[i]){
                            $(this).text(data[fields[i]]);
@@ -164,7 +164,7 @@ function saveAuto(button){
     var data = {  model: model, color: color, userId: userId };
     if(action == "/auto/update")
         data.id = id;
-    console.log(data);
+    //console.log(data);
     $.ajax({
         url: action,
         method: "POST",
@@ -190,7 +190,7 @@ function saveAuto(button){
                     $("#myMaodal-alerts").find("div.success-add").fadeIn(500).delay(2500).fadeOut(500);
                 }else if(action == "/auto/update"){
                     var i = 0;
-                    console.log($(tr).find("td"));
+                    //console.log($(tr).find("td"));
                     $(tr).find("td").each(function(){
                         if(fields[i]){
                             $(this).text(data[fields[i]]);

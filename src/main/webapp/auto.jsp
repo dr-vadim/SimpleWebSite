@@ -5,11 +5,11 @@
     <title>${Title}</title>
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/webjars/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
-    <link rel="stylesheet/less" type="text/css" href="css/style.less" />
+    <link rel="stylesheet/less" type="text/css" href="/css/style.less" />
     <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/less/2.5.3/less.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery/3.1.1/jquery.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/script.js"></script>
+    <script type="text/javascript" src="/js/script.js"></script>
 </head>
 <body>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
